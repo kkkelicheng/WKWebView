@@ -215,12 +215,7 @@
         _webView.allowsBackForwardNavigationGestures = YES;
         //可返回的页面列表, 存储已打开过的网页
        WKBackForwardList * backForwardList = [_webView backForwardList];
-        
-        //        NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:@"http://www.chinadaily.com.cn"]];
-        //        [request addValue:[self readCurrentCookieWithDomain:@"http://www.chinadaily.com.cn"] forHTTPHeaderField:@"Cookie"];
-        //        [_webView loadRequest:request];
-        
-        
+  
         NSString *path = [[NSBundle mainBundle] pathForResource:@"JStoOC.html" ofType:nil];
         NSString *htmlString = [[NSString alloc]initWithContentsOfFile:path encoding:NSUTF8StringEncoding error:nil];
         [_webView loadHTMLString:htmlString baseURL:[NSURL fileURLWithPath:[[NSBundle mainBundle] bundlePath]]];
@@ -228,24 +223,7 @@
     }
     return _webView;
 }
-    
-    
-    //解决第一次进入的cookie丢失问题
-- (NSString *)readCurrentCookieWithDomain:(NSString *)domainStr{
-    NSHTTPCookieStorage*cookieJar = [NSHTTPCookieStorage sharedHTTPCookieStorage];
-    NSMutableString * cookieString = [[NSMutableString alloc]init];
-    for (NSHTTPCookie*cookie in [cookieJar cookies]) {
-        [cookieString appendFormat:@"%@=%@;",cookie.name,cookie.value];
-    }
-    
-    //删除最后一个“;”
-    if ([cookieString hasSuffix:@";"]) {
-        [cookieString deleteCharactersInRange:NSMakeRange(cookieString.length - 1, 1)];
-    }
-    
-    return cookieString;
-}
-    
+
     //解决 页面内跳转（a标签等）还是取不到cookie的问题
 - (void)getCookie{
     
@@ -282,7 +260,8 @@
     [_webView evaluateJavaScript:JSCookieString completionHandler:nil];
     
 }
-    
+
+#pragma mark -- WKScriptMessageHandler
     
     //被自定义的WKScriptMessageHandler在回调方法里通过代理回调回来，绕了一圈就是为了解决内存不释放的问题
     //通过接收JS传出消息的name进行捕捉的回调方法

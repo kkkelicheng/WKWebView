@@ -11,6 +11,7 @@
 > * 3、网页内容加载进度条的实现
 > * 4、JS和OC的交互
 > * 5、本地HTML文件的实现
+-   6、`addScriptMessageHandler`使用
 
 
 ##  一、WKWebView涉及的一些类
@@ -113,7 +114,7 @@
 * WKScriptMessageHandler：这个协议类专门用来处理监听JavaScript方法从而调用原生OC方法，和WKUserContentController搭配使用。
 
 ```
-注意：遵守WKScriptMessageHandler协议，代理是由WKUserContentControl设置
+//注意：遵守WKScriptMessageHandler协议，代理是由WKUserContentControl设置
 
    //通过接收JS传出消息的name进行捕捉的回调方法
 - (void)userContentController:(WKUserContentController *)userContentController didReceiveScriptMessage:(WKScriptMessage *)message{
@@ -340,6 +341,16 @@
 ![文本编辑偏好设置.png](https://upload-images.jianshu.io/upload_images/1708447-44824f3cec7bad72.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
 
 
+
+##  6、`addScriptMessageHandler`使用
+记得在页面要销毁前主动调用`removeScriptMessageHandlerForName`方法,添加了几个`handler`就要`remove`掉,否则`webview`不会被释放掉.
+如果是在`viewController`中最好是在,
+`viewWillAppear`里面调用`addScriptMessageHandler`
+`viewWillDisappear`调用`removeScriptMessageHandlerForName`
+
+```
+[[_webView configuration].userContentController removeScriptMessageHandlerForName:@"jsToOcNoPrams"];
+```
 
 
 如果我WKWebView使用的总结没帮到你，你也可以看看下面几篇文：
