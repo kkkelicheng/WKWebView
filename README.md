@@ -344,7 +344,7 @@
 
 ##  6、`addScriptMessageHandler`使用
 记得在页面要销毁前主动调用`removeScriptMessageHandlerForName`方法,添加了几个`handler`就要`remove`掉,否则`webview`不会被释放掉.
-如果是在`viewController`中最好是在,
+如果是在`viewController`中(且delegate设置为`viewController`)最好是在,
 `viewWillAppear`里面调用`addScriptMessageHandler`
 `viewWillDisappear`调用`removeScriptMessageHandlerForName`
 
@@ -352,6 +352,16 @@
 [[_webView configuration].userContentController removeScriptMessageHandlerForName:@"jsToOcNoPrams"];
 ```
 
+分析:
+
+self -> webview -> configuration -> userContentController -> 直接设置handle为self (循环引用)
+
+另外借用原来文章(作者wslcmk)的设计方案如下:
+创建一个代理delegate 弱引用持有self
+self -> webview -> configuration -> userContentController -设置handle为delegate -(weak)-> self
+
+
+-------
 
 如果我WKWebView使用的总结没帮到你，你也可以看看下面几篇文：
 https://www.jianshu.com/p/833448c30d70
